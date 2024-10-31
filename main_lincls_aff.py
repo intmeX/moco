@@ -25,6 +25,7 @@ import torch.utils.data.distributed
 import torchvision.datasets as datasets
 import torchvision.models as models
 import torchvision.transforms as transforms
+from data.dataset import AffectDataSet2
 
 
 model_names = sorted(
@@ -331,18 +332,32 @@ def main_worker(gpu, ngpus_per_node, args):
     cudnn.benchmark = True
 
     # Data loading code
-    traindir = os.path.join(args.data, "train")
-    valdir = os.path.join(args.data, "val")
+    data_path = args.data
     normalize = transforms.Normalize(
         mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
     )
 
-    train_dataset = datasets.ImageFolder(
-        traindir,
-        transforms.Compose(
+    train_dataset = AffectDataSet2(
+        data_path,
+        'train',
+        affcls=7,
+        transform=transforms.Compose(
             [
                 transforms.RandomResizedCrop(224),
                 transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                normalize,
+            ]
+        ),
+    )
+    valid_dataset = AffectDataSet2(
+        data_path,
+        'valid',
+        affcls=7,
+        transform=transforms.Compose(
+            [
+                transforms.Resize(256),
+                transforms.CenterCrop(224),
                 transforms.ToTensor(),
                 normalize,
             ]
@@ -364,17 +379,7 @@ def main_worker(gpu, ngpus_per_node, args):
     )
 
     val_loader = torch.utils.data.DataLoader(
-        datasets.ImageFolder(
-            valdir,
-            transforms.Compose(
-                [
-                    transforms.Resize(256),
-                    transforms.CenterCrop(224),
-                    transforms.ToTensor(),
-                    normalize,
-                ]
-            ),
-        ),
+        valid_dataset,
         batch_size=args.batch_size,
         shuffle=False,
         num_workers=args.workers,
