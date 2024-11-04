@@ -227,7 +227,13 @@ def main_worker(gpu, ngpus_per_node, args):
         )
     # create model
     print("=> creating model '{}'".format(args.arch))
-    model = models.__dict__[args.arch]()
+    if args.pretrained:
+        arch_args = {}
+    else:
+        arch_args = {
+            'weights': models.ResNet50_Weights,
+        }
+    model = models.__dict__[args.arch](**arch_args)
 
     '''
     # freeze all layers but the last fc
@@ -305,6 +311,19 @@ def main_worker(gpu, ngpus_per_node, args):
     optimizer = torch.optim.SGD(
         parameters, args.lr, momentum=args.momentum, weight_decay=args.weight_decay
     )
+    if not args.pretrained:
+        save_checkpoint(
+            {
+                "epoch": 0,
+                "arch": args.arch,
+                "state_dict": model.state_dict(),
+                "best_acc1": 0,
+                "optimizer": optimizer.state_dict(),
+            },
+            False,
+            'resnet50_ImgNet1K.pth.tar',
+        )
+        args.__setattr__('pretrained', 'resnet50_ImgNet1K.pth.tar')
 
     # optionally resume from a checkpoint
     if args.resume:
