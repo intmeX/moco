@@ -243,10 +243,10 @@ def main_worker(gpu, ngpus_per_node, args):
     if args.pretrained:
         if os.path.isfile(args.pretrained):
             print("=> loading checkpoint '{}'".format(args.pretrained))
-            checkpoint = torch.load(args.pretrained, map_location="cpu")
+            state_dict = torch.load(args.pretrained, map_location="cpu")
 
             # rename moco pre-trained keys
-            state_dict = checkpoint["state_dict"]
+            # state_dict = checkpoint["state_dict"]
             for k in list(state_dict.keys()):
                 # retain only encoder_q up to before the embedding layer
                 if k.startswith("module.encoder_q") and not k.startswith(
