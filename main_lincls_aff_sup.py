@@ -227,7 +227,7 @@ def main_worker(gpu, ngpus_per_node, args):
         )
     # create model
     print("=> creating model '{}'".format(args.arch))
-    model = models.__dict__[args.arch](weights=models.ResNet50_Weights)
+    model = models.__dict__[args.arch]()
 
     '''
     # freeze all layers but the last fc
