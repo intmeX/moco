@@ -63,6 +63,13 @@ parser.add_argument(
     help="manual epoch number (useful on restarts)",
 )
 parser.add_argument(
+    "--num_classes",
+    default=1000,
+    type=int,
+    metavar="N",
+    help="number of classification",
+)
+parser.add_argument(
     "-b",
     "--batch-size",
     default=256,
@@ -242,6 +249,7 @@ def main_worker(gpu, ngpus_per_node, args):
         }
     model = models.__dict__[args.arch](**arch_args)
 
+    model.fc = nn.Linear(2048, args.num_classes)
     '''
     # freeze all layers but the last fc
     for name, param in model.named_parameters():
