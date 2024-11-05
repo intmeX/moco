@@ -261,7 +261,7 @@ def main_worker(gpu, ngpus_per_node, args):
     model.fc.bias.data.zero_()
 
     # load from pre-trained, before DistributedDataParallel constructor
-    if args.pretrained:
+    if args.pretrained and args.pretrained != 'ImageNet1K':
         if os.path.isfile(args.pretrained):
             print("=> loading checkpoint '{}'".format(args.pretrained))
             state_dict = torch.load(args.pretrained, map_location="cpu")
