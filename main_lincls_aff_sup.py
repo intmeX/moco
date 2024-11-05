@@ -241,12 +241,12 @@ def main_worker(gpu, ngpus_per_node, args):
         )
     # create model
     print("=> creating model '{}'".format(args.arch))
-    if args.pretrained:
-        arch_args = {}
-    else:
+    if args.pretrained == 'ImageNet1K':
         arch_args = {
-            # 'weights': models.ResNet50_Weights,
+            'weights': models.ResNet50_Weights,
         }
+    else:
+        arch_args = {}
     model = models.__dict__[args.arch](**arch_args)
 
     model.fc = nn.Linear(2048, args.num_classes)
