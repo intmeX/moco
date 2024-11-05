@@ -88,6 +88,13 @@ parser.add_argument(
     type=int,
     help="learning rate schedule (when to drop lr by a ratio)",
 )
+parser.add_argument(
+    "--warmup",
+    default=[60, 80],
+    nargs="*",
+    type=int,
+    help="learning rate schedule (when to drop lr by a ratio)",
+)
 parser.add_argument("--momentum", default=0.9, type=float, metavar="M", help="momentum")
 parser.add_argument(
     "--wd",
@@ -231,7 +238,7 @@ def main_worker(gpu, ngpus_per_node, args):
         arch_args = {}
     else:
         arch_args = {
-            'weights': models.ResNet50_Weights,
+            # 'weights': models.ResNet50_Weights,
         }
     model = models.__dict__[args.arch](**arch_args)
 
